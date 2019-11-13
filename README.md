@@ -23,6 +23,15 @@ Requires OpenJSCAD:
 
 `npm install`
 
+### TODO
+
+* Add note of materials used
+* Add note about `cutout` and `upper`
+* Add usage notes
+* Add notes about kerf on bulk-cut vs finishing operations
+* Add option to import json directly from KLE
+* Option to extend edges
+
 ### History
 
 It is based on my original OpenSCAD script, but was ported to OpenJSCAD once
