@@ -17,6 +17,12 @@ This is important because without it you need a CNC machine with at least 280mm
 of volume in a single direction to make a 60% keyboard plate. Using this
 builder you can make full-sized plates using much smaller equipment.
 
+### Install
+
+Requires OpenJSCAD:
+
+`npm install`
+
 ### History
 
 It is based on my original OpenSCAD script, but was ported to OpenJSCAD once
