@@ -137,10 +137,6 @@ var right_keymap = [
 
 var simple_test = [
   [
-    [1, 0],
-    [1, 1]
-  ],
-  [
     [2, 0, 1]
   ]
 ];
@@ -252,6 +248,7 @@ function buildKeyboard(keymap, plane) {
 
 function main() {
   return buildKeyboard(left_keymap, "switch_cutout")
+  // return buildKeyboard(left_keymap, "switch_upper")
   // return buildKeyboard(simple_test, "switch_cutout")
   // return buildKeyboard(simple_test, "switch_upper")
 }

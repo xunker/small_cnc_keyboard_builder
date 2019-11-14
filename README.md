@@ -19,9 +19,13 @@ builder you can make full-sized plates using much smaller equipment.
 
 ### Install
 
-Requires OpenJSCAD:
+Requires [OpenJSCAD CLI module](https://www.npmjs.com/package/@jscad/cli):
 
 `npm install`
+
+### How to use
+
+TDB
 
 ### TODO
 
@@ -29,7 +33,7 @@ Requires OpenJSCAD:
 * Add note about `cutout` and `upper`
 * Add usage notes
 * Add notes about kerf on bulk-cut vs finishing operations
-* Add option to import json directly from KLE
+* Add option to import json directly from KLE file or url
 * Option to extend edges
 
 ### History
@@ -39,6 +43,6 @@ I realized the design was getting complicated enough to need a real object
 model.
 
 Release History
-* 1.0 - November 2019
+* 1.0.0 - November 2019
 
 Initial
