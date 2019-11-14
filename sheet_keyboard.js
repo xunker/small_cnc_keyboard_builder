@@ -22,6 +22,7 @@ const jscad = require('@jscad/openjscad')
 // https://github.com/jscad/OpenJSCAD.org/blob/master/packages/desktop/src/core/code-loading/scriptLoading.js
 // https://github.com/jscad/OpenJSCAD.org/tree/master/packages/cli
 
+const { vector_text, vector_char } = require('@jscad/csg/api').text
 const { color } = require('@jscad/csg/api').color
 const { square, circle } = require('@jscad/csg/api').primitives2d
 const { linear_extrude } = require('@jscad/csg/api').extrusions
@@ -61,11 +62,17 @@ var ff = 0.01;
 
 var kle = require("@ijprest/kle-serial")
 
-var argv = require('yargs').option('noPathReorder', {
-  alias: 'n',
-  type: 'boolean',
-  description: 'Do not automatically re-order <path> elements by size'
-})
+var argv = require('yargs')
+  .option('noPathReorder', {
+    alias: 'n',
+    type: 'boolean',
+    description: 'Do not automatically re-order <path> elements by size'
+  })
+  .option('section', {
+    alias: 's',
+    type: 'number',
+    description: 'Section part to render (if multipart layout)'
+  })
   .usage('Build a keyboard plate and post-process the resultant SVG\n\nUsage: $0 [layoutFilename.js] [options]')
   .strict()
   .argv
@@ -88,15 +95,39 @@ var keymap = []
 // keyObjects is [rowNumber][<keys>]
 var keyObjects = []
 
+var previousKey = undefined
+var sectionNumber = 0
 for (const keyIndex in keyboard.keys) {
   let currentKey = keyboard.keys[keyIndex]
 
   if (!keymap[currentKey.y])
     keymap[currentKey.y] = []
 
+  if (previousKey) {
+    if (previousKey.y != currentKey.y) {
+      sectionNumber = 0
+    }
+
+    if (previousKey.y == currentKey.y) {
+      if (currentKey.color != previousKey.color)
+        sectionNumber++
+    }
+  }
+
+  let correctSection = (argv.section == undefined) || (argv.section == sectionNumber)
+
+  previousKey = currentKey
+  // console.log(currentKey.labels, sectionNumber, argv.section, correctSection)
+
+  if ((argv.section != undefined) && (argv.section != sectionNumber)) {
+    continue
+  }
+
   keymap[currentKey.y].push(
     [currentKey.width, currentKey.x, (currentKey.width >= 2 ? 1 : 0)]
   )
+
+  // console.log(currentKey)
 }
 
 // ---

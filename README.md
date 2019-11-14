@@ -49,6 +49,10 @@ TDB
     * make a given edge flat regardless of key row offset
   - screw holes
     * should be shared between all layers?
+* Way to automatically separate parts of keyboard based on..
+  - Front legend value?
+  - Color?
+  - ..then need to specify a "part" or "section" in the build process
 * Use kle-serial Key objects directly instead of the openscad-style array of arrays
 * Objectify Key Unit/Cutout parameters to allow for more styles
 * Objectify Stabilizer Kind/Cutout parameters to allow for more styles
