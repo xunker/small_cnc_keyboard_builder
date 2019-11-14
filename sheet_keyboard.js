@@ -192,7 +192,86 @@ function main() {
   return buildKeyboard(keymap, "switch_cutout")
 }
 
-const outputData = jscad.generateOutput('svg', main())
+// const outputData = jscad.generateOutput('svg', main())
+// fs.writeFileSync('sheet_keyboard.svg', outputData.asBuffer())
 
-// hurray ,we can now write an stl file from our raw CSG objects
-fs.writeFileSync('sheet_keyboard.svg', outputData.asBuffer())
+const { prepareOutput } = require('@jscad/core/io/prepareOutput')
+const svgSource = prepareOutput(main(), { "format": "svg"}).data[0]
+
+// ---
+
+const outputSvgFilename = "sheet_keyboard.fixed.svg"
+
+const pathElementAdditions = 'stroke="black" fill="lightgray" stroke-width="0.5"'
+
+var argv = require('yargs').option('noPathReorder', {
+  alias: 'n',
+  type: 'boolean',
+  description: 'Do not automatically re-order <path> elements by size'
+})
+  .usage('Build a keyboard plate and post-process the resultant SVG\n\nUsage: $0 [options]')
+  .argv
+
+var gElementsMatch = svgSource.match(/(\<g>.+\<\/g>)/s)
+
+if (!gElementsMatch || gElementsMatch[0].length < 1)
+  throw Error(`Could not find any <g> elements in ${inputSvgFilename}`)
+
+/* handle multiple <g> tags */
+var gElements = gElementsMatch[0]
+  .replace(/^\<g>/, '')    // remove leading
+  .replace(/\<\/g>$/, '')  // remove trailing
+  .split(/\<\/g>\s*\<g>/s) // split on "</g><g>" boundary
+
+console.log(`Fixing ${gElements.length} <g> elements`)
+
+var gElementsRewrite = gElements.map(function (gElement) {
+
+  // Separate each path element
+  var pathElements = gElement
+    .split(/(\<path\s+d=\".*\"\/\>)/)
+    .filter(part => !part.match(/^\s+$/))
+
+  console.log(`Fixing ${pathElements.length} <path> elements`)
+
+  /*
+  The order of the paths often needs to be arranged so the largest ones (the
+  baground/outlines) appear before the smaller ones (the key cutouts), otherwise
+  we won't be able to see the key cutouts.
+
+  We do this by sorting all the paths with the "largest" Line path position
+  value (the largest "Ldddd.dddd" of a path,
+  https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths), and making
+  sure the largest paths appear first.
+  */
+
+  if (argv.noPathReorder) {
+    console.log("Will not re-order path elements")
+  } else {
+    pathElements = pathElements.sort(function (firstEl, secondEl) {
+      let getMax = function (element) {
+        return [...element.matchAll(/L([\d\.]+)/g)]
+          .map(m => parseFloat(m[1]))
+          .reduce(function (a, b) { return Math.max(a, b) })
+      }
+
+      return getMax(secondEl) - getMax(firstEl)
+    })
+  }
+
+  // add fill and stroke to each <path>
+  return pathElements.map(function (pathElement) {
+    return pathElement.replace(/path\s+d=/, 'path ' + pathElementAdditions + ' d=')
+  })
+})
+
+// Write the new svg file with changed <g>/<path> elements
+fs.writeFileSync(
+  outputSvgFilename,
+  svgSource.replace(
+    gElementsMatch[0],
+    gElementsRewrite.map(pathElements => "<g>" + pathElements.join("\n") + "</g>").join("\n")
+  )
+)
+
+console.log(`Wrote ${outputSvgFilename}`)
