@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "@jscad/cli": "latest",
+    "@jscad/openjscad": "latest",
+    "@jscad/csg": "latest",
     "yargs": "latest"
   },
   "devDependencies": {}
