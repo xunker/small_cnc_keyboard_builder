@@ -29,11 +29,34 @@ TDB
 
 ### TODO
 
+* use 6u stabilizers if key is that wide
+* add "layer" system. Each layer includes:
+  - name
+  - notes (meant for human consumption)
+    * material type and thickness
+    * cutting depth
+    * cutting details
+      - bit & diameter
+      - speed
+      - technique (inside vs outline, ramp cut, etc)
+  - kerf
+    * key cutout
+    * stabilizer cutout
+    * outline
+  - extend-edge options
+    * which edges, how much
+  - justify-edge options
+    * make a given edge flat regardless of key row offset
+  - screw holes
+    * should be shared between all layers?
+* Use kle-serial Key objects directly instead of the openscad-style array of arrays
+* Objectify Key Unit/Cutout parameters to allow for more styles
+* Objectify Stabilizer Kind/Cutout parameters to allow for more styles
+* Render all layers at once with sequential filenames
 * Add note of materials used
 * Add note about `cutout` and `upper`
 * Add usage notes
 * Add notes about kerf on bulk-cut vs finishing operations
-* Add option to import json directly from KLE file or url
 * Option to extend edges
 
 ### History
