@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+'use strict'
+
 /*
 
 openjscad sheet_keyboard.jscad -o ~/Downloads/sheet_keyboard.svg
@@ -58,9 +61,22 @@ var ff = 0.01;
 
 var kle = require("@ijprest/kle-serial")
 
-var kleSource = fs.readFileSync('terrible-kailh-pg1350-choco.json', 'utf8')
+var argv = require('yargs').option('noPathReorder', {
+  alias: 'n',
+  type: 'boolean',
+  description: 'Do not automatically re-order <path> elements by size'
+})
+  .usage('Build a keyboard plate and post-process the resultant SVG\n\nUsage: $0 [layoutFilename.js] [options]')
+  .strict()
+  .argv
 
-var keyboard = kle.Serial.parse(kleSource)
+const kleSoureceFilename = argv._[0]
+const outputSvgFilename = kleSoureceFilename + ".svg"
+console.log(`Opening KLE file "${kleSoureceFilename}"`)
+
+const kleSourceData = fs.readFileSync(kleSoureceFilename, 'utf8')
+
+const keyboard = kle.Serial.parse(kleSourceData)
 
 // keyObjects is [rowNumber][<keys>][width, offset, stabilizers?]
 var keymap = []
@@ -200,17 +216,9 @@ const svgSource = prepareOutput(main(), { "format": "svg"}).data[0]
 
 // ---
 
-const outputSvgFilename = "sheet_keyboard.fixed.svg"
+// const outputSvgFilename = "sheet_keyboard.fixed.svg"
 
 const pathElementAdditions = 'stroke="black" fill="lightgray" stroke-width="0.5"'
-
-var argv = require('yargs').option('noPathReorder', {
-  alias: 'n',
-  type: 'boolean',
-  description: 'Do not automatically re-order <path> elements by size'
-})
-  .usage('Build a keyboard plate and post-process the resultant SVG\n\nUsage: $0 [options]')
-  .argv
 
 var gElementsMatch = svgSource.match(/(\<g>.+\<\/g>)/s)
 
