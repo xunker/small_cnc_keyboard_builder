@@ -71,6 +71,10 @@ var argv = require('yargs').option('noPathReorder', {
   .argv
 
 const kleSoureceFilename = argv._[0]
+
+if (!kleSoureceFilename)
+  throw Error("Must provide KLE Json file as argument")
+
 const outputSvgFilename = kleSoureceFilename + ".svg"
 console.log(`Opening KLE file "${kleSoureceFilename}"`)
 
