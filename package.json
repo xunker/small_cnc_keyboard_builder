@@ -2,6 +2,7 @@
   "dependencies": {
     "@jscad/openjscad": "latest",
     "@jscad/csg": "latest",
+    "@ijprest/kle-serial": "latest",
     "yargs": "latest"
   },
   "devDependencies": {}

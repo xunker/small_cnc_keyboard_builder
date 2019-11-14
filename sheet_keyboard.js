@@ -56,102 +56,28 @@ var ff = 0.01;
 
 // ---
 
-var left_keymap = [
-  [
-    [1, 0],
-    [1, 1],
-    [1, 2],
-    [1, 3],
-    [1, 4],
-    [1, 5],
-    [1, 6]
-  ],
-  [
-    [1.5, 0],
-    [1, 1.5],
-    [1, 2.5],
-    [1, 3.5],
-    [1, 4.5],
-    [1, 5.5]
-  ],
-  [
-    [1.75, 0],
-    [1, 1.75],
-    [1, 2.75],
-    [1, 3.75],
-    [1, 4.75],
-    [1, 5.75]
-  ],
-  [
-    [2.25, 0, 1],
-    [1, 2.25],
-    [1, 3.25],
-    [1, 4.25],
-    [1, 5.25],
-    [1, 6.25]
-  ],
-  [
-    [1, 0],
-    [1, 1],
-    [1.25, 2],
-    [1.25, 3.25],
-    [2.75, 4.5, 1]
-  ]
-];
+var kle = require("@ijprest/kle-serial")
 
-var right_keymap = [
-  [
-    [1, 0.5],
-    [1, 1.5],
-    [1, 2.5],
-    [1, 3.5],
-    [1, 4.5],
-    [1, 5.5],
-    [1.5, 6.5]
-  ],
-  [
-    [1, 0],
-    [1, 1],
-    [1, 2],
-    [1, 3],
-    [1, 4],
-    [1, 5],
-    [1, 6],
-    [1, 7]
-  ],
-  [
-    [1, 0.25],
-    [1, 1.25],
-    [1, 2.25],
-    [1, 3.25],
-    [1, 4.25],
-    [1, 5.25],
-    [1.75, 6.25],
-  ],
-  [
-    [1, 0.75],
-    [1, 1.75],
-    [1, 2.75],
-    [1, 3.75],
-    [1.25, 4.75],
-    [1, 6],
-    [1, 7]
-  ],
-  [
-    [2, 0.75, 1],
-    [1.25, 2.75],
-    [1, 4],
-    [1, 5],
-    [1, 6],
-    [1, 7]
-  ],
-];
+var kleSource = fs.readFileSync('terrible-kailh-pg1350-choco.json', 'utf8')
 
-var simple_test = [
-  [
-    [2, 0, 1]
-  ]
-];
+var keyboard = kle.Serial.parse(kleSource)
+
+// keyObjects is [rowNumber][<keys>][width, offset, stabilizers?]
+var keymap = []
+
+// keyObjects is [rowNumber][<keys>]
+var keyObjects = []
+
+for (const keyIndex in keyboard.keys) {
+  let currentKey = keyboard.keys[keyIndex]
+
+  if (!keymap[currentKey.y])
+    keymap[currentKey.y] = []
+
+  keymap[currentKey.y].push(
+    [currentKey.width, currentKey.x, (currentKey.width >= 2 ? 1 : 0)]
+  )
+}
 
 // ---
 
@@ -259,10 +185,11 @@ function buildKeyboard(keymap, plane) {
 }
 
 function main() {
-  return buildKeyboard(left_keymap, "switch_cutout")
+  // return buildKeyboard(left_keymap, "switch_cutout")
   // return buildKeyboard(left_keymap, "switch_upper")
   // return buildKeyboard(simple_test, "switch_cutout")
   // return buildKeyboard(simple_test, "switch_upper")
+  return buildKeyboard(keymap, "switch_cutout")
 }
 
 const outputData = jscad.generateOutput('svg', main())
