@@ -29,6 +29,7 @@ TDB
 
 ### TODO
 
+* print out maximum width/length of plate when rendering
 * use 6u stabilizers if key is that wide
 * add "layer" system. Each layer includes:
   - name
