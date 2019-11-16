@@ -89,11 +89,8 @@ const kleSourceData = fs.readFileSync(kleSoureceFilename, 'utf8')
 
 const keyboard = kle.Serial.parse(kleSourceData)
 
-// keyObjects is [rowNumber][<keys>][width, offset, stabilizers?]
+// keymap is [rowNumber][<keys>][width, offset, stabilizers?]
 var keymap = []
-
-// keyObjects is [rowNumber][<keys>]
-var keyObjects = []
 
 var previousKey = undefined
 var sectionNumber = 0
@@ -114,10 +111,9 @@ for (const keyIndex in keyboard.keys) {
     }
   }
 
-  let correctSection = (argv.section == undefined) || (argv.section == sectionNumber)
-
-  previousKey = currentKey
+  // let correctSection = (argv.section == undefined) || (argv.section == sectionNumber)
   // console.log(currentKey.labels, sectionNumber, argv.section, correctSection)
+  previousKey = currentKey
 
   if ((argv.section != undefined) && (argv.section != sectionNumber)) {
     continue
