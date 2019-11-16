@@ -143,7 +143,7 @@ for (const keyIndex in keyboard.keys) {
 
   keymap[currentKey.y].push(currentKey)
 
-  console.log(currentKey)
+  // console.log(currentKey)
 }
 
 // ---
@@ -208,11 +208,52 @@ function cutout(main_w, main_l, main_corner_r, stabilizer_main_width, stabilizer
   return union(obj)
 }
 
-function planed_cutout(plane, include_stabilizers = false) {
+// TODO must check logic for uneven rows
+// TODO must draw these holes AFTER all rows written
+function screwHole(location, keyObj, diameter = 2, edges = {}) {
+  console.log(keyObj)
+  console.log(edges)
+  var [x_offset, y_offset] = [0, 0]
+  const inset = diameter;
+
+  if ([0, 1, 2].indexOf(location) > -1) {
+    // top
+    y_offset = (keyObj.height * switch_unit_l) - (edges["top"] ? inset : 0)
+  }
+
+  if ([6, 7, 8].indexOf(location) > -1) {
+    // bottom
+    y_offset = (edges["bottom"] ? inset : 0)
+  }
+
+  if ([0, 3, 6].indexOf(location) > -1) {
+    // left
+    x_offset = (edges["left"] ? inset : 0)
+  }
+
+  if ([2, 5, 8].indexOf(location) > -1) {
+    // right
+    x_offset = (keyObj.width * switch_unit_w) - (edges["right"] ? inset : 0)
+  }
+
+  if ([1, 7].indexOf(location) > -1) {
+    // middle top/bottom
+    x_offset = (keyObj.width * switch_unit_w)/2
+  }
+
+  if ([3, 5].indexOf(location) > -1) {
+    // middle left/right
+    y_offset = (keyObj.height * switch_unit_l)/2
+  }
+
+  return circle({ d: diameter, center: true, fn: 12 }).translate([x_offset, y_offset])
+}
+
+function planed_cutout(keyObj, plane, include_stabilizers = false) {
   if (plane == "switch_upper") {
-    return cutout(switch_upper_w, switch_upper_l, switch_upper_corner_r, stabilizer_upper_width, stabilizer_upper_length, stabilizer_upper_corner_r, include_stabilizers);
+    return cutout(switch_upper_w, switch_upper_l, switch_upper_corner_r, stabilizer_upper_width, stabilizer_upper_length, stabilizer_upper_corner_r, include_stabilizers)
   } else if (plane == "switch_cutout") {
-    return cutout(switch_cutout_w, switch_cutout_l, switch_cutout_corner_r, stabilizer_cutout_width, stabilizer_cutout_length, stabilizer_cutout_corner_r, include_stabilizers);
+    return cutout(switch_cutout_w, switch_cutout_l, switch_cutout_corner_r, stabilizer_cutout_width, stabilizer_cutout_length, stabilizer_cutout_corner_r, include_stabilizers)
   }
 }
 
@@ -226,13 +267,62 @@ function cutouts(keymap, rowNo, plane) {
     var keyObj = keymap[rowNo][keyDataIdx]
 
     row.push(
-      planed_cutout(plane, (keyObj.width >= 2))
+      planed_cutout(keyObj, plane, (keyObj.width >= 2))
         .translate([keyObj.x * switch_unit_w, 0])
         .translate([switch_unit_w * (keyObj.width - 1) / 2, 0])
     )
   }
 
   return union(row)
+}
+
+function screwHoles(keymap) {
+  return []
+  /*
+    find possible screw positions:
+    +-----+
+    |0 1 2|
+    |3   5|
+    |6 7 8|
+    +-----+
+    4 (centre) is not used
+    */
+
+  var holes = new Array()
+  for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
+
+    if ((renderRows.length) && (renderRows.indexOf(rowNo) == -1))
+      continue
+
+    var row_y_offset = ((keymap.length - 1) - (rowNo)) * switch_unit_l
+
+    for (const keyIndex in keymap[rowNo]) {
+      let keyObj = keymap[rowNo][keyIndex]
+
+      // console.log(keyObj.labels)
+      for (let screwPosition = 0; screwPosition <= 9; screwPosition++) {
+        if (screwPosition == 4)
+          continue
+        // console.log(keyObj.labels[screwPosition])
+        if ((keyObj.labels[screwPosition]) && (keyObj.labels[screwPosition].match('SCREW'))) {
+          console.log(screwPosition, keyObj.labels[screwPosition])
+          holes.push(
+            screwHole(screwPosition, keyObj, 2,
+              {
+                "top": (keyObj.y <= 0),
+                "right": (keymap[keyObj.y].indexOf(keyObj) == keymap[keyObj.y].length - 1),
+                "bottom": (keyObj.y == keymap.length - 1),
+                "left": (keymap[keyObj.y].indexOf(keyObj) == 0)
+              }
+            ).translate([keyObj.x * switch_cutout_w, 0])
+          )
+        }
+      }
+      // console.log('---')
+    }
+  }
+
+  return union(holes)
 }
 
 function buildKeyboard(keymap, plane) {
@@ -248,7 +338,7 @@ function buildKeyboard(keymap, plane) {
       difference(
         switchRow(keymap[rowNo])
           .translate([keymap[rowNo][0].x * switch_unit_w, 0]),
-        cutouts(keymap, rowNo, plane)
+        cutouts(keymap, rowNo, plane),
       ).translate([0, row_y_offset])
     )
   }
@@ -260,7 +350,7 @@ function main() {
   // return buildKeyboard(left_keymap, "switch_upper")
   // return buildKeyboard(simple_test, "switch_cutout")
   // return buildKeyboard(simple_test, "switch_upper")
-  return buildKeyboard(keymap, "switch_cutout")
+  return union(buildKeyboard(keymap, "switch_cutout")).subtract(screwHoles(keymap))
 }
 
 // const outputData = jscad.generateOutput('svg', main())
