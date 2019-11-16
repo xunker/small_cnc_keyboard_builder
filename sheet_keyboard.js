@@ -73,9 +73,31 @@ var argv = require('yargs')
     type: 'number',
     description: 'Section part to render (if multipart layout)'
   })
+  .option('rows', {
+    alias: 'r',
+    type: 'string',
+    description: 'Render only single row (ex: "1") or rows (ex: "1-3")'
+  })
   .usage('Build a keyboard plate and post-process the resultant SVG\n\nUsage: $0 [layoutFilename.js] [options]')
   .strict()
   .argv
+
+var renderRows = []
+if (argv.rows != undefined) {
+  if (argv.rows.match('-')) {
+    for (let i = parseInt(argv.rows.split('-')[0]); i <= parseInt(argv.rows.split('-')[1]); i++) {
+      renderRows.push(i)
+    }
+  } else {
+    renderRows.push(parseInt(argv.rows))
+  }
+}
+
+if (renderRows.length > 1) {
+  console.log(`Rendering only rows ${renderRows[0]} to ${renderRows[renderRows.length-1]}`)
+} else if (renderRows.length  == 1) {
+  console.log(`Rendering only row ${renderRows[0]}`)
+}
 
 const kleSoureceFilename = argv._[0]
 
@@ -218,6 +240,10 @@ function cutouts(keymap, rowNo, plane) {
 function buildKeyboard(keymap, plane) {
   var rows = new Array()
   for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
+
+    if ((renderRows.length) && (renderRows.indexOf(rowNo) == -1))
+      continue
+
     var row_y_offset = ((keymap.length - 1) - (rowNo)) * switch_unit_l
 
     rows.push(
