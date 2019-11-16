@@ -111,7 +111,7 @@ const kleSourceData = fs.readFileSync(kleSoureceFilename, 'utf8')
 
 const keyboard = kle.Serial.parse(kleSourceData)
 
-// keymap is [rowNumber][<keys>][width, offset, stabilizers?]
+// keymap is [rowNumber][<keys objects>]
 var keymap = []
 
 var previousKey = undefined
@@ -141,11 +141,9 @@ for (const keyIndex in keyboard.keys) {
     continue
   }
 
-  keymap[currentKey.y].push(
-    [currentKey.width, currentKey.x, (currentKey.width >= 2 ? 1 : 0)]
-  )
+  keymap[currentKey.y].push(currentKey)
 
-  // console.log(currentKey)
+  console.log(currentKey)
 }
 
 // ---
@@ -166,7 +164,7 @@ function rounded_rect(w, l, r = 0.5) {
 
 
 function rowLength(rowData) {
-  return (rowData[rowData.length - 1][0] + rowData[rowData.length - 1][1]) - rowData[0][1];
+  return (rowData[rowData.length - 1].width + rowData[rowData.length - 1].x) - rowData[0].x;
 }
 
 function switchRow(rowData) {
@@ -225,12 +223,12 @@ function cutouts(keymap, rowNo, plane) {
   var row = new Array()
 
   for (const keyDataIdx in keymap[rowNo]) {
-    var keyData = keymap[rowNo][keyDataIdx]
+    var keyObj = keymap[rowNo][keyDataIdx]
 
     row.push(
-      planed_cutout(plane, (keyData[2] == 1))
-        .translate([keyData[1] * switch_unit_w, 0])
-        .translate([switch_unit_w * (keyData[0] - 1) / 2, 0])
+      planed_cutout(plane, (keyObj.width >= 2))
+        .translate([keyObj.x * switch_unit_w, 0])
+        .translate([switch_unit_w * (keyObj.width - 1) / 2, 0])
     )
   }
 
@@ -249,7 +247,7 @@ function buildKeyboard(keymap, plane) {
     rows.push(
       difference(
         switchRow(keymap[rowNo])
-          .translate([keymap[rowNo][0][1] * switch_unit_w, 0]),
+          .translate([keymap[rowNo][0].x * switch_unit_w, 0]),
         cutouts(keymap, rowNo, plane)
       ).translate([0, row_y_offset])
     )

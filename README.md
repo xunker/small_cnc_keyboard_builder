@@ -54,7 +54,6 @@ TDB
   - Front legend value?
   - Color?
   - ..then need to specify a "part" or "section" in the build process
-* Use kle-serial Key objects directly instead of the openscad-style array of arrays
 * Objectify Key Unit/Cutout parameters to allow for more styles
 * Objectify Stabilizer Kind/Cutout parameters to allow for more styles
 * Render all layers at once with sequential filenames
