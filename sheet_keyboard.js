@@ -260,7 +260,7 @@ function planed_cutout(keyObj, plane, include_stabilizers = false) {
 /*
 plane can be: switch_upper, switch_cutout
 */
-function cutouts(keymap, rowNo, plane) {
+function rowCutouts(keymap, rowNo, plane) {
   var row = new Array()
 
   for (const keyDataIdx in keymap[rowNo]) {
@@ -325,7 +325,7 @@ function screwHoles(keymap) {
   return union(holes)
 }
 
-function buildKeyboard(keymap, plane) {
+function boardCutouts(keymap, plane) {
   var rows = new Array()
   for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
 
@@ -335,14 +335,35 @@ function buildKeyboard(keymap, plane) {
     var row_y_offset = ((keymap.length - 1) - (rowNo)) * switch_unit_l
 
     rows.push(
-      difference(
-        switchRow(keymap[rowNo])
-          .translate([keymap[rowNo][0].x * switch_unit_w, 0]),
-        cutouts(keymap, rowNo, plane),
-      ).translate([0, row_y_offset])
+      rowCutouts(keymap, rowNo, plane).translate([0, row_y_offset])
     )
   }
-  return rows
+  return union(rows)
+}
+
+function baseKeyboard(keymap) {
+  var rows = new Array()
+  for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
+
+    if ((renderRows.length) && (renderRows.indexOf(rowNo) == -1))
+      continue
+
+    var row_y_offset = ((keymap.length - 1) - (rowNo)) * switch_unit_l
+
+    rows.push(
+      switchRow(keymap[rowNo])
+        .translate([keymap[rowNo][0].x * switch_unit_w, 0])
+        .translate([0, row_y_offset])
+    )
+  }
+  return union(rows)
+}
+
+function buildKeyboard(keymap, plane) {
+  return difference(
+    baseKeyboard(keymap),
+    boardCutouts(keymap, plane)
+  )
 }
 
 function main() {
@@ -350,7 +371,10 @@ function main() {
   // return buildKeyboard(left_keymap, "switch_upper")
   // return buildKeyboard(simple_test, "switch_cutout")
   // return buildKeyboard(simple_test, "switch_upper")
-  return union(buildKeyboard(keymap, "switch_cutout")).subtract(screwHoles(keymap))
+  // return union(buildKeyboard(keymap, "switch_cutout")).subtract(screwHoles(keymap))
+  return buildKeyboard(keymap, "switch_cutout")
+  // return baseKeyboard(keymap)
+  // return boardCutouts(keymap, "switch_cutout")
 }
 
 // const outputData = jscad.generateOutput('svg', main())
