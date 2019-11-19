@@ -152,10 +152,10 @@ function rounded_rect(w, l, r = 0.5) {
   // $fn = 12;
   if ((round_inset_corners) && (r > 0.0)) {
     return hull(
-      circle(r = r).translate([r, r]),
-      circle(r = r).translate([w - r, r]),
-      circle(r = r).translate([r, l - r]),
-      circle(r = r).translate([w - r, l - r])
+      circle({ r: r, center: true }).translate([r, r]),
+      circle({ r: r, center: true }).translate([w - r, r]),
+      circle({ r: r, center: true }).translate([r, l - r]),
+      circle({ r: r, center: true }).translate([w - r, l - r])
     )
   } else {
     return square([w, l])
@@ -194,7 +194,7 @@ function stabilizers(width, length, corner_r) {
 function cutout(main_w, main_l, main_corner_r, stabilizer_main_width, stabilizer_main_length, stabilizer_main_corner_r, include_stabilizers = false) {
 
   var obj = new Array()
-
+  console.log(switch_unit_l, main_l, (switch_unit_l - main_l) / 2)
   obj.push(
     rounded_rect(main_w, main_l, main_corner_r).translate([0, (switch_unit_l - main_l) / 2]).translate([(switch_unit_w - main_w) / 2, 0])
   )
@@ -254,52 +254,15 @@ function planed_cutout(keyObj, rowNo, plane, include_stabilizers = false) {
     return cutout(switch_upper_w, switch_upper_l, switch_upper_corner_r, stabilizer_upper_width, stabilizer_upper_length, stabilizer_upper_corner_r, include_stabilizers).translate([switch_unit_w * (keyObj.width - 1) / 2, 0])
   } else if (plane == "switch_cutout") {
     return cutout(switch_cutout_w, switch_cutout_l, switch_cutout_corner_r, stabilizer_cutout_width, stabilizer_cutout_length, stabilizer_cutout_corner_r, include_stabilizers).translate([switch_unit_w * (keyObj.width - 1) / 2, 0])
-  } else if (plane == "case") {
-    let edges = {
-      "top": (keyObj.y <= 0),
-      "right": (keymap[keyObj.y].indexOf(keyObj) == keymap[keyObj.y].length - 1),
-      "bottom": (keyObj.y == keymap.length - 1),
-      "left": (keymap[keyObj.y].indexOf(keyObj) == 0)
-    }
-
-    // return square([switch_cutout_w, switch_cutout_l])
-    let inset = 2
-    let cutout_w = (switch_unit_w * keyObj.width)
-    let cutout_l = switch_unit_l
-    let x_offset = 0
-    let y_offset = 0
-// console.log(edges)
-    if (edges['top']) {
-      cutout_l = cutout_l - inset
-    }
-
-    if (edges['bottom']) {
-      cutout_l = cutout_l - inset
-      y_offset += inset
-    }
-
-    if (edges['left']) {
-      cutout_w = cutout_w - inset
-      cutout_l = cutout_l - inset*2
-      x_offset += inset
-      y_offset += inset
-    }
-
-    if (edges['right']) {
-      cutout_w = cutout_w - inset
-
-      cutout_l = cutout_l - (inset * 2)
-      y_offset += inset
-    }
-
-    return square([cutout_w+0.1, cutout_l]).translate([x_offset, y_offset])
+  } else {
+    throw Error(`unknown plane ${plane}`)
   }
 }
 
 /*
 plane can be: switch_upper, switch_cutout
 */
-function rowCutouts(keymap, rowNo, plane) {
+function keyRowCutouts(keymap, rowNo, plane) {
   var row = new Array()
 
   for (const keyDataIdx in keymap[rowNo]) {
@@ -367,7 +330,7 @@ function screwHoles(keymap) {
   return union(holes)
 }
 
-function boardCutouts(keymap, plane) {
+function keyCutouts(keymap, plane) {
   var rows = new Array()
   for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
 
@@ -377,12 +340,87 @@ function boardCutouts(keymap, plane) {
     var row_y_offset = ((keymap.length - 1) - (rowNo)) * switch_unit_l
 
     rows.push(
-      rowCutouts(keymap, rowNo, plane).translate([0, row_y_offset])
+      keyRowCutouts(keymap, rowNo, plane).translate([0, row_y_offset])
     )
   }
   return union(rows)
 }
 
+function caseCutouts(keymap) {
+  var rows = new Array()
+
+  let inset_x = (switch_unit_w - switch_cutout_w) / 2;
+  let inset_y = (switch_unit_l - switch_cutout_l) / 2;
+
+  for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
+
+    if ((renderRows.length) && (renderRows.indexOf(rowNo) == -1))
+      continue
+
+    let row_x_offset = keymap[rowNo][0].x * switch_unit_w
+    let row_y_offset = ((keymap.length - 1) - (rowNo)) * switch_unit_l
+
+    let row_w = (rowLength(keymap[rowNo]) * switch_unit_w)
+    let row_l = switch_unit_l
+
+    if (rowNo == keymap.length - 1) {
+      row_l -= (inset_y - 0.1)
+      row_y_offset += inset_y
+    } else if (rowNo == 0) {
+      row_l -= inset_y
+    }
+
+    if ((rowNo != keymap.length - 1)  && (row_w > rowLength(keymap[rowNo + 1]) * switch_unit_w)) {
+      let row_l2 = row_l - inset_y
+      if (rowNo > 0)
+        row_l2 -= inset_y
+
+      rows.push(
+        square([row_w - inset_x * 2, row_l2]).translate([row_x_offset + inset_x, row_y_offset + inset_y])
+      )
+
+      row_w = (rowLength(keymap[rowNo + 1]) * switch_unit_w)
+      row_x_offset = keymap[rowNo + 1][0].x * switch_unit_w
+
+
+    }
+
+    if ((rowNo > 0) && (row_w > rowLength(keymap[rowNo - 1]) * switch_unit_w)) {
+      rows.push(
+        square([row_w - inset_x * 2, row_l - (inset_y * 2)]).translate([row_x_offset + inset_x, row_y_offset + inset_y])
+      )
+
+      row_w = (rowLength(keymap[rowNo - 1]) * switch_unit_w)
+      row_x_offset = keymap[rowNo - 1][0].x * switch_unit_w
+      // console.log(rowNo, keymap[rowNo - 1][0].x, row_x_offset)
+    }
+
+    row_w -= inset_x * 2
+
+    rows.push(
+      square([row_w, row_l]).translate([row_x_offset + inset_x, row_y_offset])
+    )
+  }
+  return union(rows)
+}
+
+function bottomCutouts(keymap, plane) {
+  throw Error("Not yet implemented")
+}
+
+// key is plane name
+var layerPlans = {
+  "switch_cutout": (keymap, plane) => difference(baseKeyboard(keymap), keyCutouts(keymap, plane)),
+  "switch_upper": (keymap, plane) => difference(baseKeyboard(keymap), keyCutouts(keymap, plane)),
+  "case": (keymap, plane) => difference(baseKeyboard(keymap), caseCutouts(keymap)),
+  "bottom": (keymap, _plane = undefined) => baseKeyboard(keymap)
+}
+
+function layerPlan(keymap, plane) {
+  return layerPlans[plane](keymap, plane)
+}
+
+// returns base keyboard footprint, no cutouts
 function baseKeyboard(keymap) {
   var rows = new Array()
   for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
@@ -402,10 +440,7 @@ function baseKeyboard(keymap) {
 }
 
 function buildKeyboard(keymap, plane) {
-  return difference(
-    baseKeyboard(keymap),
-    boardCutouts(keymap, plane)
-  )
+  return layerPlan(keymap, plane)
 }
 
 function main() {
@@ -415,8 +450,8 @@ function main() {
   // return buildKeyboard(simple_test, "switch_upper")
   // return union(buildKeyboard(keymap, "switch_cutout")).subtract(screwHoles(keymap))
   // return buildKeyboard(keymap, "switch_cutout")
-  return buildKeyboard(keymap, "case")
-  // return boardCutouts(keymap, "case")
+  return buildKeyboard(keymap, "switch_upper")
+  // return caseCutouts(keymap, "case")
 }
 
 // const outputData = jscad.generateOutput('svg', main())
