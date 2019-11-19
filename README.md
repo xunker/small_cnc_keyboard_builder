@@ -28,7 +28,8 @@ Requires [OpenJSCAD CLI module](https://www.npmjs.com/package/@jscad/cli):
 TDB
 
 ### TODO
-
+* Add kerf to js code
+* Add tests
 * print out maximum width/length of plate when rendering
 * use 6u stabilizers if key is that wide
 * add "layer" system. Each layer includes:
