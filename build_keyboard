@@ -2,40 +2,19 @@
 'use strict'
 
 const fatalError = require('./lib/fatal-error')
-const loadKeymapFromFile = require('./lib/keymap-loader')
 const argv = require('./lib/command-line-args')
+const loadKeymapFromFile = require('./lib/keymap-loader')
+
 const kleSoureceFilename = argv._[0]
 const keymap = loadKeymapFromFile(kleSoureceFilename)
-const {
-  vector_text, vector_char,
-  square, circle,
-  union, difference,
-  rotate, translate, scale, mirror, hull, chain_hull, expand, contract,
-} = require('./lib/render/openjscad')
-const {layerPlan} = require('./lib/layer-plans')
-const dimensions = require('./lib/dimensions')
-
-const renderRows = require('./lib/render-rows')
-
-if (renderRows.length > 1) {
-  console.log(`Rendering only rows ${renderRows[0]} to ${renderRows[renderRows.length - 1]}`)
-} else if (renderRows.length == 1) {
-  console.log(`Rendering only row ${renderRows[0]}`)
-}
+const { layerPlan } = require('./lib/layer-plans')
 
 function main() {
-  return layerPlan(keymap, argv.layer)
+  return layerPlan(keymap, argv)
 }
-
-// const outputData = jscad.generateOutput('svg', main())
-// fs.writeFileSync('sheet_keyboard.svg', outputData.asBuffer())
 
 const { prepareOutput } = require('@jscad/core/io/prepareOutput')
 const svgSource = prepareOutput(main(), { "format": "svg" }).data[0]
-
-// ---
-
-// const outputSvgFilename = "sheet_keyboard.fixed.svg"
 
 const pathElementAdditions = 'stroke="black" fill="lightgray" stroke-width="0.5"'
 
