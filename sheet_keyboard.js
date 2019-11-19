@@ -388,8 +388,8 @@ function lastKey(row) {
 function caseCutouts(keymap) {
   var rows = new Array()
 
-  let inset_x = (switch_unit_w - switch_cutout_w) / 2;
-  let inset_y = (switch_unit_l - switch_cutout_l) / 2;
+  let inset_x = (switch_unit_w - switch_cutout_w) / 2.5;
+  let inset_y = (switch_unit_l - switch_cutout_l) / 2.5;
 
   // First, long channels for each row that are not connected to each other
   for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
