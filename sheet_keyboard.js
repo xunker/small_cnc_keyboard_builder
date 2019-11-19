@@ -346,62 +346,176 @@ function keyCutouts(keymap, plane) {
   return union(rows)
 }
 
+// function caseCutouts(keymap) {
+//   var rows = new Array()
+
+//   let inset_x = (switch_unit_w - switch_cutout_w) / 2;
+//   let inset_y = (switch_unit_l - switch_cutout_l) / 2;
+
+//   for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
+
+//     if ((renderRows.length) && (renderRows.indexOf(rowNo) == -1))
+//       continue
+
+//     let row_x_offset = keymap[rowNo][0].x * switch_unit_w
+//     let row_y_offset = ((keymap.length - 1) - (rowNo)) * switch_unit_l
+
+//     let row_w = (rowLength(keymap[rowNo]) * switch_unit_w)
+//     let row_l = switch_unit_l
+
+//     if (rowNo == keymap.length - 1) {
+//       row_l -= (inset_y - 0.1)
+//       row_y_offset += inset_y
+//     } else if (rowNo == 0) {
+//       row_l -= inset_y
+//     }
+
+//     if ((rowNo != keymap.length - 1)  && (row_w > rowLength(keymap[rowNo + 1]) * switch_unit_w)) {
+//       let row_l2 = row_l - inset_y
+//       if (rowNo > 0)
+//         row_l2 -= inset_y
+
+//       rows.push(
+//         square([row_w - inset_x * 2, row_l2]).translate([row_x_offset + inset_x, row_y_offset + inset_y])
+//       )
+
+//       row_w = (rowLength(keymap[rowNo + 1]) * switch_unit_w)
+//       row_x_offset = keymap[rowNo + 1][0].x * switch_unit_w
+
+
+//     }
+
+//     if ((rowNo > 0) && (row_w > rowLength(keymap[rowNo - 1]) * switch_unit_w)) {
+//       rows.push(
+//         square([row_w - inset_x * 2, row_l - (inset_y * 2)]).translate([row_x_offset + inset_x, row_y_offset + inset_y])
+//       )
+
+//       row_w = (rowLength(keymap[rowNo - 1]) * switch_unit_w)
+//       row_x_offset = keymap[rowNo - 1][0].x * switch_unit_w
+//       // console.log(rowNo, keymap[rowNo - 1][0].x, row_x_offset)
+//     }
+
+//     row_w -= inset_x * 2
+
+//     rows.push(
+//       square([row_w, row_l]).translate([row_x_offset + inset_x, row_y_offset])
+//     )
+//   }
+//   return union(rows)
+// }
+
+function isFirstRow(rowNum) {
+  return rowNum == 0
+}
+
+function isLastRow(rowNum) {
+  return rowNum == keymap.length - 1
+}
+
+// return first key object in a row array
+function firstKey(row) {
+  return row[0]
+}
+
+// return last key object in a row array
+function lastKey(row) {
+  return row[row.length - 1]
+}
+
 function caseCutouts(keymap) {
   var rows = new Array()
 
   let inset_x = (switch_unit_w - switch_cutout_w) / 2;
   let inset_y = (switch_unit_l - switch_cutout_l) / 2;
 
+  // First, long channels for each row that are not connected to each other
+  for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
+    if ((renderRows.length) && (renderRows.indexOf(rowNo) == -1))
+      continue
+
+    let currentRow = keymap[rowNo]
+
+    let row_x_offset = keymap[rowNo][0].x * switch_unit_w
+    let row_y_offset = (((keymap.length - 1) - (rowNo)) * switch_unit_l)
+
+    let row_w = (rowLength(keymap[rowNo]) * switch_unit_w)
+    let row_l = switch_unit_l - (inset_y * 2)
+
+    row_w -= inset_x * 2
+
+    rows.push(
+      square([row_w, row_l]).translate([row_x_offset + inset_x, row_y_offset + inset_y])
+    )
+  }
+
+  // Next, work out how to interconnect the channels while maintaining perimeter
+  // Find where the current row safely intersects with previous or next row
   for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
 
     if ((renderRows.length) && (renderRows.indexOf(rowNo) == -1))
       continue
 
+    let currentRow = keymap[rowNo]
+
     let row_x_offset = keymap[rowNo][0].x * switch_unit_w
-    let row_y_offset = ((keymap.length - 1) - (rowNo)) * switch_unit_l
+    let row_y_offset = (((keymap.length - 1) - (rowNo)) * switch_unit_l)
 
     let row_w = (rowLength(keymap[rowNo]) * switch_unit_w)
     let row_l = switch_unit_l
 
-    if (rowNo == keymap.length - 1) {
-      row_l -= (inset_y - 0.1)
-      row_y_offset += inset_y
-    } else if (rowNo == 0) {
-      row_l -= inset_y
-    }
+    // console.log(rowNo, currentRow[0].x, lastKey(currentRow).x + lastKey(currentRow).width)
+    if (!isFirstRow(rowNo) && !isLastRow(rowNo)) {
+      let nextRow = keymap[rowNo + 1]
+      let prevRow = keymap[rowNo - 1]
 
-    if ((rowNo != keymap.length - 1)  && (row_w > rowLength(keymap[rowNo + 1]) * switch_unit_w)) {
-      let row_l2 = row_l - inset_y
-      if (rowNo > 0)
-        row_l2 -= inset_y
-
-      rows.push(
-        square([row_w - inset_x * 2, row_l2]).translate([row_x_offset + inset_x, row_y_offset + inset_y])
+      let [prevIntersectStart, prevIntersectEnd] = rangeIntersection(
+        [firstKey(currentRow).x, lastKey(currentRow).x + lastKey(currentRow).width],
+        [firstKey(prevRow).x, lastKey(prevRow).x + lastKey(prevRow).width],
       )
 
-      row_w = (rowLength(keymap[rowNo + 1]) * switch_unit_w)
-      row_x_offset = keymap[rowNo + 1][0].x * switch_unit_w
-
-
-    }
-
-    if ((rowNo > 0) && (row_w > rowLength(keymap[rowNo - 1]) * switch_unit_w)) {
-      rows.push(
-        square([row_w - inset_x * 2, row_l - (inset_y * 2)]).translate([row_x_offset + inset_x, row_y_offset + inset_y])
+      let [nextIntersectStart, nextIntersectEnd] = rangeIntersection(
+        [firstKey(currentRow).x, lastKey(currentRow).x + lastKey(currentRow).width],
+        [firstKey(nextRow).x, lastKey(nextRow).x + lastKey(nextRow).width],
       )
 
-      row_w = (rowLength(keymap[rowNo - 1]) * switch_unit_w)
-      row_x_offset = keymap[rowNo - 1][0].x * switch_unit_w
-      // console.log(rowNo, keymap[rowNo - 1][0].x, row_x_offset)
+      // console.log(rowNo, currentRow[0].x, lastKey(currentRow).x + lastKey(currentRow).width, 'prev:', prevIntersectStart, prevIntersectEnd, 'next:', nextIntersectStart, nextIntersectEnd)
+
+      if ((nextIntersectStart >= firstKey(currentRow).x) && (nextIntersectEnd >= lastKey(currentRow).x + lastKey(currentRow).width)) {
+        rows.push(
+          square([((nextIntersectEnd - nextIntersectStart)*switch_unit_w)-(inset_x*2), switch_unit_l]).translate(
+            [
+              (nextIntersectStart * switch_unit_w) + inset_x,
+              row_y_offset - inset_y
+            ]
+          )
+        )
+      }
+
+      if ((prevIntersectStart >= firstKey(currentRow).x) && (prevIntersectEnd >= lastKey(currentRow).x + lastKey(currentRow).width)) {
+
+        rows.push(
+          square([((prevIntersectEnd - prevIntersectStart) * switch_unit_w) - (inset_x * 2), switch_unit_l]).translate(
+            [
+              (prevIntersectStart * switch_unit_w) + inset_x,
+              row_y_offset + inset_y
+            ]
+          )
+        )
+      }
     }
-
-    row_w -= inset_x * 2
-
-    rows.push(
-      square([row_w, row_l]).translate([row_x_offset + inset_x, row_y_offset])
-    )
   }
+
   return union(rows)
+}
+
+function rangeIntersection(rangeA, rangeB) {
+  let range_min = rangeA[0] < rangeB[0] ? rangeA : rangeB
+  let range_max = range_min == rangeA ? rangeB : rangeA
+
+  if (range_min[1] < range_max[0])
+    return NaN // the ranges to not intersect
+
+  return [range_max[0], (range_min[1] < range_max[1] ? range_min[1] : range_max[1])]
 }
 
 function bottomCutouts(keymap, plane) {
@@ -450,7 +564,7 @@ function main() {
   // return buildKeyboard(simple_test, "switch_upper")
   // return union(buildKeyboard(keymap, "switch_cutout")).subtract(screwHoles(keymap))
   // return buildKeyboard(keymap, "switch_cutout")
-  return buildKeyboard(keymap, "switch_upper")
+  return buildKeyboard(keymap, "case")
   // return caseCutouts(keymap, "case")
 }
 
