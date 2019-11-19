@@ -11,10 +11,9 @@ const {
   square, circle,
   union, difference,
   rotate, translate, scale, mirror, hull, chain_hull, expand, contract,
-} = require('./lib/render')
+} = require('./lib/render/openjscad')
 const {layerPlan} = require('./lib/layer-plans')
 const dimensions = require('./lib/dimensions')
-const { rowLength, isFirstRow, isLastRow, firstKey, lastKey, rangeIntersection } = require('./lib/misc')
 
 const renderRows = require('./lib/render-rows')
 
