@@ -60,6 +60,18 @@ var ff = 0.01;
 
 // ---
 
+// key is plane name
+var layerPlans = {
+  "cutouts": (keymap, plane) => difference(baseKeyboard(keymap), keyCutouts(keymap, plane)),
+  "upper": (keymap, plane) => difference(baseKeyboard(keymap), keyCutouts(keymap, plane)),
+  "case": (keymap, plane) => difference(baseKeyboard(keymap), caseCutouts(keymap)),
+  "bottom": (keymap, _plane = undefined) => baseKeyboard(keymap)
+}
+
+function layerPlan(keymap, plane) {
+  return layerPlans[plane](keymap, plane)
+}
+
 var kle = require("@ijprest/kle-serial")
 
 var argv = require('yargs')
@@ -78,9 +90,18 @@ var argv = require('yargs')
     type: 'string',
     description: 'Render only single row (ex: "1") or rows (ex: "1-3")'
   })
+  .option('layer', {
+    alias: 'l',
+    type: 'string',
+    default: 'cutouts',
+    description: `Which layer to generate; (${Object.keys(layerPlans).join(", ")})`
+  })
   .usage('Build a keyboard plate and post-process the resultant SVG\n\nUsage: $0 [layoutFilename.js] [options]')
   .strict()
   .argv
+
+if (Object.keys(layerPlans).indexOf(argv.layer) == -1)
+  throw Error(`Invalid layer "${argv.layer}". Must be one of ${Object.keys(layerPlans).join(", ")}`)
 
 var renderRows = []
 if (argv.rows != undefined) {
@@ -194,7 +215,7 @@ function stabilizers(width, length, corner_r) {
 function cutout(main_w, main_l, main_corner_r, stabilizer_main_width, stabilizer_main_length, stabilizer_main_corner_r, include_stabilizers = false) {
 
   var obj = new Array()
-  console.log(switch_unit_l, main_l, (switch_unit_l - main_l) / 2)
+  // console.log(switch_unit_l, main_l, (switch_unit_l - main_l) / 2)
   obj.push(
     rounded_rect(main_w, main_l, main_corner_r).translate([0, (switch_unit_l - main_l) / 2]).translate([(switch_unit_w - main_w) / 2, 0])
   )
@@ -250,9 +271,9 @@ function screwHole(location, keyObj, diameter = 2, edges = {}) {
 }
 
 function planed_cutout(keyObj, rowNo, plane, include_stabilizers = false) {
-  if (plane == "switch_upper") {
+  if (plane == "upper") {
     return cutout(switch_upper_w, switch_upper_l, switch_upper_corner_r, stabilizer_upper_width, stabilizer_upper_length, stabilizer_upper_corner_r, include_stabilizers).translate([switch_unit_w * (keyObj.width - 1) / 2, 0])
-  } else if (plane == "switch_cutout") {
+  } else if (plane == "cutouts") {
     return cutout(switch_cutout_w, switch_cutout_l, switch_cutout_corner_r, stabilizer_cutout_width, stabilizer_cutout_length, stabilizer_cutout_corner_r, include_stabilizers).translate([switch_unit_w * (keyObj.width - 1) / 2, 0])
   } else {
     throw Error(`unknown plane ${plane}`)
@@ -345,64 +366,6 @@ function keyCutouts(keymap, plane) {
   }
   return union(rows)
 }
-
-// function caseCutouts(keymap) {
-//   var rows = new Array()
-
-//   let inset_x = (switch_unit_w - switch_cutout_w) / 2;
-//   let inset_y = (switch_unit_l - switch_cutout_l) / 2;
-
-//   for (var rowNo = 0; rowNo < keymap.length; rowNo++) {
-
-//     if ((renderRows.length) && (renderRows.indexOf(rowNo) == -1))
-//       continue
-
-//     let row_x_offset = keymap[rowNo][0].x * switch_unit_w
-//     let row_y_offset = ((keymap.length - 1) - (rowNo)) * switch_unit_l
-
-//     let row_w = (rowLength(keymap[rowNo]) * switch_unit_w)
-//     let row_l = switch_unit_l
-
-//     if (rowNo == keymap.length - 1) {
-//       row_l -= (inset_y - 0.1)
-//       row_y_offset += inset_y
-//     } else if (rowNo == 0) {
-//       row_l -= inset_y
-//     }
-
-//     if ((rowNo != keymap.length - 1)  && (row_w > rowLength(keymap[rowNo + 1]) * switch_unit_w)) {
-//       let row_l2 = row_l - inset_y
-//       if (rowNo > 0)
-//         row_l2 -= inset_y
-
-//       rows.push(
-//         square([row_w - inset_x * 2, row_l2]).translate([row_x_offset + inset_x, row_y_offset + inset_y])
-//       )
-
-//       row_w = (rowLength(keymap[rowNo + 1]) * switch_unit_w)
-//       row_x_offset = keymap[rowNo + 1][0].x * switch_unit_w
-
-
-//     }
-
-//     if ((rowNo > 0) && (row_w > rowLength(keymap[rowNo - 1]) * switch_unit_w)) {
-//       rows.push(
-//         square([row_w - inset_x * 2, row_l - (inset_y * 2)]).translate([row_x_offset + inset_x, row_y_offset + inset_y])
-//       )
-
-//       row_w = (rowLength(keymap[rowNo - 1]) * switch_unit_w)
-//       row_x_offset = keymap[rowNo - 1][0].x * switch_unit_w
-//       // console.log(rowNo, keymap[rowNo - 1][0].x, row_x_offset)
-//     }
-
-//     row_w -= inset_x * 2
-
-//     rows.push(
-//       square([row_w, row_l]).translate([row_x_offset + inset_x, row_y_offset])
-//     )
-//   }
-//   return union(rows)
-// }
 
 function isFirstRow(rowNum) {
   return rowNum == 0
@@ -522,18 +485,6 @@ function bottomCutouts(keymap, plane) {
   throw Error("Not yet implemented")
 }
 
-// key is plane name
-var layerPlans = {
-  "switch_cutout": (keymap, plane) => difference(baseKeyboard(keymap), keyCutouts(keymap, plane)),
-  "switch_upper": (keymap, plane) => difference(baseKeyboard(keymap), keyCutouts(keymap, plane)),
-  "case": (keymap, plane) => difference(baseKeyboard(keymap), caseCutouts(keymap)),
-  "bottom": (keymap, _plane = undefined) => baseKeyboard(keymap)
-}
-
-function layerPlan(keymap, plane) {
-  return layerPlans[plane](keymap, plane)
-}
-
 // returns base keyboard footprint, no cutouts
 function baseKeyboard(keymap) {
   var rows = new Array()
@@ -558,14 +509,7 @@ function buildKeyboard(keymap, plane) {
 }
 
 function main() {
-  // return buildKeyboard(left_keymap, "switch_cutout")
-  // return buildKeyboard(left_keymap, "switch_upper")
-  // return buildKeyboard(simple_test, "switch_cutout")
-  // return buildKeyboard(simple_test, "switch_upper")
-  // return union(buildKeyboard(keymap, "switch_cutout")).subtract(screwHoles(keymap))
-  // return buildKeyboard(keymap, "switch_cutout")
-  return buildKeyboard(keymap, "case")
-  // return caseCutouts(keymap, "case")
+  return buildKeyboard(keymap, argv.layer)
 }
 
 // const outputData = jscad.generateOutput('svg', main())
