@@ -8,8 +8,13 @@ const loadKeymapFromFile = require('./lib/keymap-loader')
 const kleSoureceFilename = argv._[0]
 const keymap = loadKeymapFromFile(kleSoureceFilename)
 const { layerPlan } = require('./lib/layer-plans')
+const config = require('./lib/config')
 
 function main() {
+  if (argv.configFile) {
+    config.loadConfigurationFile(argv.configFile)
+    console.log(config.layers)
+  }
   return layerPlan(keymap, argv)
 }
 

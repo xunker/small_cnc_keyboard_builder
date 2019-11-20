@@ -4,7 +4,8 @@
     "@jscad/csg": "latest",
     "@jscad/core": "latest",
     "@ijprest/kle-serial": "latest",
-    "yargs": "latest"
+    "yargs": "latest",
+    "deepmerge": "latest"
   },
   "devDependencies": {}
 }

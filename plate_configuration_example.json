@@ -1,0 +1,93 @@
+{
+  "name": "Terrible Kailh PG1350 Choco",
+  "keymap": "examples/terrible-kailh-pg1350-choco.json",
+  "notes": "(meant for human consumption)\n* material type and thickness\n* cutting depth\n* cutting details\n\t- bit & diameter\n\t- speed\n\t- technique (inside vs outline, ramp cut, etc)",
+  "global": {
+    "extendFootprint": {
+      "top": 5,
+      "bottom": 5,
+      "left": 5,
+      "right": 5
+    },
+    "dimensions": {
+      "switches": {
+        "unit": {
+          "width": 19.05,
+          "length": 19.05
+        },
+        "cutouts": {
+          "width": 14,
+          "length": 14,
+          "corner_radius": 0.3
+        }
+      },
+      "stabilizers": {
+        "cutouts": {
+          "spacing": 24,
+          "width": 3.5,
+          "length": 14,
+          "corner_radius": 0,
+          "y_offset": 1.0
+        }
+      }
+    }
+  },
+
+  "sections":  {
+    "0": {
+      "extendFootprint": {
+        "right": 0
+      }
+    },
+    "1": {
+      "extendFootprint": {
+        "left": 0,
+        "right": 0
+      }
+    },
+    "2": {
+      "extendFootprint": {
+        "left": 0
+      }
+    }
+  },
+
+  "layers": {
+    "cutout": {},
+    "upper": {
+      "dimensions": {
+        "switches": {
+          "cutouts": {
+            "width": 16.25,
+            "length": 16.25,
+            "corner_radius": 0.5
+          }
+        },
+        "stabilizers": {
+          "cutouts": {
+            "width": 6.8,
+            "length": 15.6,
+            "corner_radius": 0.5
+          }
+        }
+      },
+      "kerf": {
+        "switches.cutouts": 0.0
+      }
+    },
+    "case": {},
+    "bottom": {}
+  },
+
+  "operations": {
+    "rough": {
+      "kerf": {
+        "outline": 0.5,
+        "switches.cutouts": 0.5
+      }
+    },
+    "finish": {
+      "kerf": {}
+    }
+  }
+}
