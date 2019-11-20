@@ -13,7 +13,7 @@ const config = require('./lib/config')
 function main() {
   if (argv.configFile) {
     config.loadConfigurationFile(argv.configFile)
-    console.log(config.layers)
+    console.log(config.operations)
   }
   return layerPlan(keymap, argv)
 }
