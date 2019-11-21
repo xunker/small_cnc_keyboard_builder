@@ -13,11 +13,11 @@ const config = require('./lib/config')
 function main() {
   if (argv.configFile) {
     config.loadConfigurationFile(argv.configFile)
-    config.loadConfigurationProfile('layers', argv.layer)
     if (argv.section != undefined)
       config.loadConfigurationProfile('sections', argv.section)
     if (argv.operation)
       config.loadConfigurationProfile('operations', argv.operation)
+    config.loadConfigurationProfile('layers', argv.layer)
   }
   return layerPlan(keymap, argv)
 }
