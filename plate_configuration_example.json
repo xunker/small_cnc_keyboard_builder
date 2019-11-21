@@ -53,8 +53,11 @@
   },
 
   "layers": {
-    "cutout": {},
+    "cutout": {
+      "description": "Main plate where key switches are placed"
+    },
     "upper": {
+      "description": "Over 'cutout' layer, either as separate piece or as a second operation if the material for the 'cutout' piece is too thick for the switches",
       "dimensions": {
         "switches": {
           "cutouts": {
@@ -75,8 +78,12 @@
         "switches.cutouts": 0.0
       }
     },
-    "case": {},
-    "bottom": {}
+    "case": {
+      "description": "Just the outline keyboard footprint, meant to be made by multiple machined/lasered sheet stacked together"
+    },
+    "bottom": {
+      "description": "The bottom cover, full footprint"
+    }
   },
 
   "operations": {

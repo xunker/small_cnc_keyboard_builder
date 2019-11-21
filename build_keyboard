@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 'use strict'
 
-const fatalError = require('./lib/fatal-error')
 const argv = require('./lib/command-line-args')
 const loadKeymapFromFile = require('./lib/keymap-loader')
 
