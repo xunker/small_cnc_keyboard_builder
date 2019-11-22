@@ -22,6 +22,10 @@ function main() {
       config.loadConfigurationProfile('operations', argv.operation)
     config.loadConfigurationProfile('layers', argv.layer)
   }
+
+  logger.debug('Current dimensions:')
+  logger.debug(config.dimensions)
+
   return layerPlan(keymap, argv)
 }
 
