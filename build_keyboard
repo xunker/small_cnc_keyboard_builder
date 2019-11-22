@@ -7,9 +7,13 @@ const loadKeymapFromFile = require('./lib/keymap-loader')
 const kleSoureceFilename = argv._[0]
 const keymap = loadKeymapFromFile(kleSoureceFilename)
 const { layerPlan } = require('./lib/layer-plans')
+const logger = require('./lib/logger')
 const config = require('./lib/config')
 
 function main() {
+  if (argv.verbose)
+    logger.setLogLevelByName("debug")
+
   if (argv.configFile) {
     config.loadConfigurationFile(argv.configFile)
     if (argv.section != undefined)
