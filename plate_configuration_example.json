@@ -4,10 +4,10 @@
   "notes": "(meant for human consumption)\n* material type and thickness\n* cutting depth\n* cutting details\n\t- bit & diameter\n\t- speed\n\t- technique (inside vs outline, ramp cut, etc)",
   "global": {
     "extendFootprint": {
-      "top": 5,
-      "bottom": 5,
-      "left": 5,
-      "right": 5
+      "top": 0,
+      "bottom": 0,
+      "left": 0,
+      "right": 0
     },
     "dimensions": {
       "switches": {
