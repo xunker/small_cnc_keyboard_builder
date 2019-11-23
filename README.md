@@ -29,41 +29,41 @@ TDB
 
 ### TODO
 * Add kerf to js code
+  - in an operation
 * Add tests
 * print out maximum width/length of plate when rendering
 * use 6u stabilizers if key is that wide
-* add "layer" system. Each layer includes:
-  - name
-  - notes (meant for human consumption)
-    * material type and thickness
-    * cutting depth
-    * cutting details
-      - bit & diameter
-      - speed
-      - technique (inside vs outline, ramp cut, etc)
+  - option to add/override stabilizer parameters in config file
+    * "keys of X width use stabilzier profile Y"
+* Add to config file layers:
   - kerf
     * key cutout
     * stabilizer cutout
     * outline
-  - extend-edge options
-    * which edges, how much
   - justify-edge options
     * make a given edge flat regardless of key row offset
   - screw holes
     * should be shared between all layers?
-* Way to automatically separate parts of keyboard based on..
-  - Front legend value?
-  - Color?
-  - ..then need to specify a "part" or "section" in the build process
+* Document:
+  - splitting in to sections based on colour
+  - what render rows does
+  - what truncation does and why its useful
+  - layers vs sections vs operations
 * Objectify Key Unit/Cutout parameters to allow for more styles
 * Objectify Stabilizer Kind/Cutout parameters to allow for more styles
 * Render all layers at once with sequential filenames
+  - modularize the `build_all.sh` bash script
 * Add note of materials used
 * Add note about `cutout` and `upper`
+* option to build custom layers based on "case" and "bottom", not just "cutout"
 * Add usage notes
 * Add notes about kerf on bulk-cut vs finishing operations
-* Option to extend edges
-
+* Add example of workflow
+  * laser'ed
+  * machined
+* Properly the section shift issue outlined in `truncateOutput`
+* add proper package.json with version, etc
+* add examples
 ### History
 
 It is based on my original OpenSCAD script, but was ported to OpenJSCAD once
