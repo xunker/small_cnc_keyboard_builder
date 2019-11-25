@@ -41,10 +41,6 @@ TDB
   - justify-edge options
     * make a given edge flat regardless of key row offset
   - screw holes
-* allow multiple config files to be loaded
-  - values therein are read and loaded in order given
-* allow multiple "operations" to be specified
-  - values therein are read and loaded in order given
 * Document:
   - splitting in to sections based on colour
   - what render rows does

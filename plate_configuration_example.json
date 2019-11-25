@@ -89,6 +89,11 @@
         "default": 0.5
       }
     },
+    "multitest": {
+      "kerf": {
+        "default": 0.25
+      }
+    },
     "example": {
       "kerf": {
         "default": 0.5,

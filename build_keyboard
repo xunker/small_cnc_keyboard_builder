@@ -24,6 +24,8 @@ function main() {
     if (argv.operation)
       config.loadConfigurationProfile('operations', argv.operation)
 
+  } else {
+    config.loadDefaults()
   }
 
   logger.debug('Current dimensions:')
