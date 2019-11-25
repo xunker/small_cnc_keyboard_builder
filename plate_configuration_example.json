@@ -73,9 +73,6 @@
             "corner_radius": 0.5
           }
         }
-      },
-      "kerf": {
-        "switches.cutouts": 0.0
       }
     },
     "case": {
@@ -87,14 +84,23 @@
   },
 
   "operations": {
-    "rough": {
+    "laser": {
       "kerf": {
-        "outline": 0.5,
-        "switches.cutouts": 0.5
+        "default": 0.5
       }
     },
-    "finish": {
-      "kerf": {}
+    "example": {
+      "kerf": {
+        "default": 0.5,
+        "footprint": 0.5,
+        "case": 0.5,
+        "switches": {
+          "cutouts": 0.5
+        },
+        "stabilizers": {
+          "cutouts": 0.5
+        }
+      }
     }
   }
 }

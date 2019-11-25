@@ -18,9 +18,12 @@ function main() {
     config.loadConfigurationFile(argv.configFile)
     if (argv.section != undefined)
       config.loadConfigurationProfile('sections', argv.section)
+
+    config.loadConfigurationProfile('layers', argv.layer)
+
     if (argv.operation)
       config.loadConfigurationProfile('operations', argv.operation)
-    config.loadConfigurationProfile('layers', argv.layer)
+
   }
 
   logger.debug('Current dimensions:')

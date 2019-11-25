@@ -28,22 +28,23 @@ Requires [OpenJSCAD CLI module](https://www.npmjs.com/package/@jscad/cli):
 TDB
 
 ### TODO
-* Add kerf to js code
-  - in an operation
 * Add tests
 * print out maximum width/length of plate when rendering
 * use 6u stabilizers if key is that wide
   - option to add/override stabilizer parameters in config file
     * "keys of X width use stabilzier profile Y"
 * Add to config file layers:
-  - kerf
-    * key cutout
-    * stabilizer cutout
-    * outline
+  - protect certain paramters -- they can be defined in any block, but not *re-defined*
+    - switch unit dimensions
+    - screw hole placement (but screw hole size *can*)
+    - ..anything else that must be consistent between layers
   - justify-edge options
     * make a given edge flat regardless of key row offset
   - screw holes
-    * should be shared between all layers?
+* allow multiple config files to be loaded
+  - values therein are read and loaded in order given
+* allow multiple "operations" to be specified
+  - values therein are read and loaded in order given
 * Document:
   - splitting in to sections based on colour
   - what render rows does
@@ -57,11 +58,13 @@ TDB
 * Add note about `cutout` and `upper`
 * option to build custom layers based on "case" and "bottom", not just "cutout"
 * Add usage notes
-* Add notes about kerf on bulk-cut vs finishing operations
+* Add documentation about kerf on
+  - CNC: bulk-cut vs finishing operations
+  - Laser: laser kerf
 * Add example of workflow
   * laser'ed
   * machined
-* Properly the section shift issue outlined in `truncateOutput`
+* Properly fix the section shift issue outlined in `truncateOutput`
 * add proper package.json with version, etc
 * add examples
 ### History
