@@ -27,6 +27,19 @@ Requires [OpenJSCAD CLI module](https://www.npmjs.com/package/@jscad/cli):
 
 TDB
 
+### Stabilizer placement and installation
+
+Currently only costar-style stabilizers are supported. More will come later.
+
+Suggested installation:
+
+Stabilizer cutouts extend *below* the switch, toward the bottom edge of the
+board (closes to to the user). The wire-side of the stabilizers should be on
+that edge too.
+
+The keycap-pins should be installed with the "long side" pointed at the *top*
+*edge* of the keyboard.
+
 ### TODO
 * Add tests
 * print out maximum width/length of plate when rendering
