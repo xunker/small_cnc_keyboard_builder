@@ -72,6 +72,9 @@
             "length": 15.6,
             "corner_radius": 0.5
           }
+        },
+        "screws": {
+          "diameter": 2
         }
       }
     },
