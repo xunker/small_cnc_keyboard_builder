@@ -7,5 +7,7 @@
     "yargs": "latest",
     "deepmerge": "latest"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jest": "^24.9.0"
+  }
 }
