@@ -37,16 +37,8 @@
   },
 
   "sections":  {
-    "0": {
-      "extendFootprint": {
-        "right": 0
-      }
-    },
-    "1": {
-      "extendFootprint": {
-        "left": 0
-      }
-    }
+    "0": { },
+    "1": { }
   },
 
   "layers": {
