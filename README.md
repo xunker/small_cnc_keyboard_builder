@@ -74,6 +74,7 @@ The keycap-pins should be installed with the "long side" pointed at the *top*
   * laser'ed
   * machined
 * Properly fix the section shift issue outlined in `truncateOutput`
+  - Also fix issue of it not taking kerf + extendFootprint in to account
 * add proper package.json with version, etc
 * add examples
 ### History
