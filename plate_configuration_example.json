@@ -23,7 +23,10 @@
       },
       "stabilizers": {
         "cutouts": {
-          "spacing": 24,
+          "spacing": {
+            "2": 24,
+            "6": 76.2
+          },
           "width": 3.5,
           "length": 14,
           "corner_radius": 0,
