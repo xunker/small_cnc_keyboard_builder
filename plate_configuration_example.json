@@ -36,6 +36,9 @@
       "screws": {
         "diameter": 2,
         "inset": null
+      },
+      "caseWall": {
+        "thickness": null
       }
     }
   },
