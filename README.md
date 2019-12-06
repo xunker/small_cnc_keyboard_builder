@@ -42,6 +42,7 @@ The keycap-pins should be installed with the "long side" pointed at the *top*
 
 ### TODO
 * Add tests
+* Add jsdoc to function
 * print out maximum width/length of plate when rendering
 * use 6u stabilizers if key is that wide
   - option to add/override stabilizer parameters in config file
