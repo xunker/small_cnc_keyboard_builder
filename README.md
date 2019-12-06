@@ -42,7 +42,6 @@ The keycap-pins should be installed with the "long side" pointed at the *top*
 
 ### TODO
 * add case wall thickness to config
-* add screw inset distance to config
 * Add tests
 * Add jsdoc to function
 * print out maximum width/length of plate when rendering
