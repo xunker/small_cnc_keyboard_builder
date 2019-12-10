@@ -53,7 +53,6 @@ The keycap-pins should be installed with the "long side" pointed at the *top*
     - ..anything else that must be consistent between layers
   - justify-edge options
     * make a given edge flat regardless of key row offset
-  - screw holes
 * Document:
   - splitting in to sections based on colour
   - what render rows does
