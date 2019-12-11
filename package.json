@@ -1,14 +1,15 @@
 {
   "dependencies": {
-    "@jscad/openjscad": "latest",
-    "@jscad/csg": "latest",
-    "@jscad/core": "latest",
     "@ijprest/kle-serial": "latest",
-    "yargs": "latest",
-    "deepmerge": "latest"
+    "@jscad/core": "latest",
+    "@jscad/csg": "latest",
+    "@jscad/openjscad": "latest",
+    "deepmerge": "latest",
+    "yargs": "latest"
   },
   "devDependencies": {
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "memfs": "^3.0.1"
   },
   "scripts": {
     "test": "jest"
